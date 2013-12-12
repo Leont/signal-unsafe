@@ -35,7 +35,7 @@ sub FETCH {
 
 sub STORE {
 	my ($self, $key, $value) = @_;
-	sigaction(sig_num($key), POSIX::SigAction->($value, $Mask, $Flags));
+	sigaction(sig_num($key), POSIX::SigAction->new($value, $Mask, $Flags));
 	return $value;
 }
 
