@@ -2,9 +2,12 @@ package Signal::Unsafe;
 use strict;
 use warnings FATAL => 'all';
 
+use XSLoader;
+XSLoader::load(__PACKAGE__, Signal::Unsafe->VERSION);
+
 use Config;
 use IPC::Signal qw/sig_num sig_name/;
-use POSIX qw/sigaction SA_SIGINFO/;
+use POSIX qw/SA_SIGINFO/;
 
 {
 no warnings 'once';
