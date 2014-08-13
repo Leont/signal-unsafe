@@ -64,12 +64,14 @@ sub STORE {
 	my ($self, $key, $value) = @_;
 	my ($handler, $mask, $flags) = get_args($value);
 	sigaction(sig_num($key), POSIX::SigAction->new($handler, $mask, $flags));
-	return $value;
+	return;
 }
 
 sub DELETE {
 	my ($self, $key) = @_;
-	return $self->STORE($key, "DEFAULT");
+	my $old = POSIX::SigAction->new("DEFAULT", $Mask, $Flags);
+	sigaction(sig_num($key), POSIX::SigAction->new("DEFAULT", $Mask, $Flags), $old);
+	return ($old->handler, $old->mask, $old->flags);
 }
 
 sub CLEAR {
