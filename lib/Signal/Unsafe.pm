@@ -7,6 +7,7 @@ XSLoader::load(__PACKAGE__, Signal::Unsafe->VERSION);
 
 use Config;
 use IPC::Signal qw/sig_num sig_name/;
+use List::Util 'reduce';
 use POSIX qw/SA_SIGINFO/;
 
 {
@@ -28,7 +29,7 @@ sub _get_status {
 	my ($self, $num) = @_;
 	my $ret = POSIX::SigAction->new;
 	sigaction($num, undef, $ret);
-	return $ret->handler ne 'DEFAULT' ? $ret->handler : undef;
+	return ($ret->handler, $ret->mask, $ret->flags);
 }
 
 sub FETCH {
@@ -36,9 +37,33 @@ sub FETCH {
 	return $self->_get_status(sig_num($key));
 }
 
+my %flag_values = (
+	siginfo   => POSIX::SA_SIGINFO,
+	nodefer   => POSIX::SA_NODEFER,
+	restart   => POSIX::SA_RESTART,
+	onstack   => POSIX::SA_ONSTACK,
+	resethand => POSIX::SA_RESETHAND,
+	nocldstop => POSIX::SA_NOCLDSTOP,
+	nocldwait => POSIX::SA_NOCLDWAIT,
+);
+
+sub get_args {
+	my $value = shift;
+	if (ref $value eq 'ARRAY') {
+		my ($handler, $mask, $flags) = @{$value};
+		$mask = $Mask if not defined $mask;
+		$flags = not defined $flags ? $Flags : ref($flags) ne 'ARRAY' ? $flags : reduce { $a | $b } map { $flag_values{$_} } @{$flags};
+		return ($handler, $mask, $flags);
+	}
+	else {
+		return ($value, $Mask, $Flags);
+	}
+}
+
 sub STORE {
 	my ($self, $key, $value) = @_;
-	sigaction(sig_num($key), POSIX::SigAction->new($value, $Mask, $Flags));
+	my ($handler, $mask, $flags) = get_args($value);
+	sigaction(sig_num($key), POSIX::SigAction->new($handler, $mask, $flags));
 	return $value;
 }
 
