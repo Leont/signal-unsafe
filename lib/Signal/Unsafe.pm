@@ -123,6 +123,3 @@ sub DESTROY {
 
 __END__
 
-=for Pod::Coverage
-SCALAR
-=cut
