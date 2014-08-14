@@ -29,7 +29,7 @@ sub _get_status {
 	my ($self, $num) = @_;
 	my $ret = POSIX::SigAction->new;
 	sigaction($num, undef, $ret);
-	return ($ret->handler, $ret->mask, $ret->flags);
+	return [ $ret->handler, $ret->flags, $ret->mask ];
 }
 
 sub FETCH {
