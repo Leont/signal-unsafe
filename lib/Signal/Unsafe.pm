@@ -50,19 +50,19 @@ my %flag_values = (
 sub get_args {
 	my $value = shift;
 	if (ref $value eq 'ARRAY') {
-		my ($handler, $mask, $flags) = @{$value};
+		my ($handler, $flags, $mask) = @{$value};
 		$mask = $Mask if not defined $mask;
 		$flags = not defined $flags ? $Flags : ref($flags) ne 'ARRAY' ? $flags : reduce { $a | $b } map { $flag_values{$_} } @{$flags};
 		return ($handler, $mask, $flags);
 	}
 	else {
-		return ($value, $Mask, $Flags);
+		return ($value, $Flags, $Mask);
 	}
 }
 
 sub STORE {
 	my ($self, $key, $value) = @_;
-	my ($handler, $mask, $flags) = get_args($value);
+	my ($handler, $flags, $mask) = get_args($value);
 	sigaction(sig_num($key), POSIX::SigAction->new($handler, $mask, $flags));
 	return;
 }
