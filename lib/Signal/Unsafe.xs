@@ -20,6 +20,8 @@ static SV* S_make_args(pTHX_ siginfo_t* info) {
 	add_entry(errno, iv);
 	add_entry(code, iv);
 //	add_entry(trapno, iv);
+	add_entry(utime, uv);
+	add_entry(stime, uv);
 	add_entry(pid, iv);
 	add_entry(uid, iv);
 	add_entry(status, iv);
@@ -28,6 +30,7 @@ static SV* S_make_args(pTHX_ siginfo_t* info) {
 	add_entry(timerid, iv);
 	add_entry(overrun, iv);
 	add_entry(fd, iv);
+	add_entry_cast(ptr, uv, UV);
 	add_entry_cast(addr, uv, UV);
 	return newRV_noinc((SV*)args);
 }
