@@ -1,4 +1,5 @@
 package Signal::Unsafe;
+
 use strict;
 use warnings FATAL => 'all';
 
@@ -11,8 +12,8 @@ use List::Util 'reduce';
 use POSIX qw/SA_SIGINFO/;
 
 {
-no warnings 'once';
-tie %Signal::Unsafe, __PACKAGE__;
+	no warnings 'once';
+	tie %Signal::Unsafe, __PACKAGE__;
 }
 our $Flags = SA_SIGINFO;
 our $Mask  = POSIX::SigSet->new;
@@ -119,7 +120,126 @@ sub DESTROY {
 
 1;
 
-#ABSTRACT: Unsafe signal handlers made easy
+#ABSTRACT: Unsafe signal handlers made convenient
 
-__END__
+=head1 SYNOPSIS
+
+ $Signal::Mask{USR1} = 1;
+ $Signal::Unsafe{USR1} = sub {
+     my ($signo, $args, $binary) = @_;
+     die "Process $args->{int} has run too long";
+ }
+
+ for my $pid (@pids) {
+	 my $clock = POSIX::RT::Clock->get_cpuclock($pid);
+	 push @timers, POSIX::RT::Timer->new(clock => $clock, value => 180, id => $pid);
+ }
+ $ppoll = IO::PPoll->new();
+ $ppoll->mask(\*STDIN, POLLIN);
+ # SIGUSR1 may be received during the ppoll, but not outside of it
+ $ppoll->poll;
+
+=head1 DESCRIPTION
+
+This module provides a single global hash that, much like C<%SIG>, allows one to set signal handlers. Unlike C<%SIG>, it will set "unsafe" ones. You're expected to provide your own safety, for example by masking and then selectively unmasking it as in the synopsis.
+
+=head1 VARIABLES
+
+=over 4
+
+=item * %Signal::Unsafe
+
+This hash contains handlers for signals. It accepts various values:
+
+=over 4
+
+=item * If a code-reference is written to it, it will accept use that as handler conjoint with the default C<$Flags> and C<$Mask>.
+
+=item * If an array-reference is written to is, it will accept that as a tuple of C<$handler>, C<$flags> and C<$mask>. Handler must be a coderef. C<$flags> must be either an integer value (a bitmask of C<POSIX::SA_*> values, or an array-reference containing some of the following entries:
+
+=over 4
+
+=item * siginfo
+
+=item * nodefer
+
+=item * restart
+
+=item * onstack
+
+=item * resethand
+
+=item * nocldstop
+
+=item * nocldwait
+
+=back
+
+=item * If an undefined value is written to it, the handler is reset to default.
+
+=back
+
+=item * $Signal::Unsafe::Flags
+
+This contains the default flags. Its initial value is C<POSIX:SA_SIGINFO>
+
+=item * $Signal::Unsafe::Mask
+
+This contains the default mask. Its initial value is an empty mask.
+
+=back
+
+=head1 SIGNAL HANDLER
+
+The signal handler will be called as soon as the signal is dispatched to the process/thread, without any userland delay. If the C<SA_SIGINFO> flag is set (which is highly recommended), the handler will not receive one but three argument.
+
+=over 4
+
+=item * The signal number
+
+This is simple the number of the signal
+
+=item * The signal information hash
+
+This is a hash containing the following entries:
+
+=over 4
+
+=item * signo
+
+=item * code
+
+=item * errno
+
+=item * pid
+
+=item * uid
+
+=item * status
+
+=item * utime
+
+=item * stime
+
+=item * int
+
+=item * ptr
+
+=item * overrun
+
+=item * timerid
+
+=item * addr
+
+=item * band
+
+=item * fd
+
+=back
+
+Most values are not meaningful for most signal events.
+
+=item * The signal information as a binary blob
+
+=back
 
