@@ -12,26 +12,40 @@ START_MY_CXT;
 
 typedef int SysRet;
 
-#define add_entry(name, type) hv_stores(args, #name, newSV##type(info->si_##name))
-#define add_entry_cast(name, type, cast) hv_stores(args, #name, newSV##type((cast)info->si_##name))
+#define add_iv(name) hv_stores(args, #name, newSViv(info->si_##name))
+#define add_uv(name) hv_stores(args, #name, newSVuv(info->si_##name))
+#define add_ptr(name) hv_stores(args, #name, newSVuv(PTR2UV(info->si_##name)))
+
+#ifndef si_int
+#define si_int si_value.sival_int
+#endif
+#ifndef si_ptr
+#define si_ptr si_value.sival_ptr
+#endif
+
 static SV* S_make_args(pTHX_ siginfo_t* info) {
 	HV* args = newHV();
-	add_entry(signo, iv);
-	add_entry(errno, iv);
-	add_entry(code, iv);
-//	add_entry(trapno, iv);
-	add_entry(utime, uv);
-	add_entry(stime, uv);
-	add_entry(pid, iv);
-	add_entry(uid, iv);
-	add_entry(status, iv);
-	add_entry(band, iv);
-	add_entry(int, iv);
-	add_entry(timerid, iv);
-	add_entry(overrun, iv);
-	add_entry(fd, iv);
-	add_entry_cast(ptr, uv, UV);
-	add_entry_cast(addr, uv, UV);
+	add_iv(signo);
+	add_iv(errno);
+	add_iv(code);
+#ifdef si_utime
+	add_uv(utime);
+	add_uv(stime);
+#endif
+	add_iv(pid);
+	add_iv(uid);
+	add_iv(status);
+	add_ptr(addr);
+	add_iv(int);
+	add_ptr(ptr);
+#ifdef si_timerid
+	add_iv(timerid);
+	add_iv(overrun);
+#endif
+#ifdef si_fd
+	add_iv(fd);
+	add_iv(band);
+#endif
 	return newRV_noinc((SV*)args);
 }
 #define make_args(info) S_make_args(aTHX_ info)

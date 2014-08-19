@@ -1,6 +1,7 @@
 Revision history for Signal-Unsafe
 
 {{$NEXT}}
+          Fix various portability issues
 
 0.001     2014-08-16 14:17:36+02:00 Europe/Amsterdam
           - Initial release
