@@ -154,6 +154,11 @@ void S_sigaction_to_hash(pTHX_ struct sigaction* ptr, HV* hash, CV* handler) {
 }
 #define sigaction_to_hash(sig_action, hash, handler) S_sigaction_to_hash(aTHX_ sig_action, hash, handler)
 
+static void remove_handler(pTHX_ void* ptr) {
+	SAVEFREESV(*(SV**)ptr);
+	*(SV**)ptr = NULL;
+}
+
 MODULE = Signal::Unsafe				PACKAGE = Signal::Unsafe
 
 BOOT:
@@ -179,10 +184,15 @@ sigaction(sig, newaction, oldaction = 0)
 			hash_to_sigaction(&newact, &new_handler, newaction);
 
 		oldhandler = MY_CXT.handlers[sig];
-		if (newaction && new_handler) {
-			if (MY_CXT.handlers[sig])
-				SvREFCNT_dec(MY_CXT.handlers[sig]);
-			MY_CXT.handlers[sig] = (CV*)SvREFCNT_inc(new_handler);
+		if (newaction) {
+			if (new_handler) {
+				if (MY_CXT.handlers[sig])
+					SvREFCNT_dec(MY_CXT.handlers[sig]);
+				MY_CXT.handlers[sig] = (CV*)SvREFCNT_inc(new_handler);
+			}
+			else {
+				SAVEDESTRUCTOR_X(&remove_handler, MY_CXT.handlers + sig);
+			}
 		}
 		RETVAL = sigaction(sig, newaction ? &newact : NULL, oldaction ? &oldact : NULL);
 
