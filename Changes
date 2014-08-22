@@ -1,6 +1,8 @@
 Revision history for Signal-Unsafe
 
 {{$NEXT}}
+
+0.003     2014-08-22 15:34:17+03:00 Europe/Sofia
           Fix leak when removing handler
           Generate correct mask on perl < 5.16
           Disable fd entry on OpenBSD
