@@ -42,7 +42,7 @@ static SV* S_make_args(pTHX_ siginfo_t* info) {
 	add_iv(timerid);
 	add_iv(overrun);
 #endif
-#ifdef si_fd
+#if defined(si_fd) && !defined(__OpenBSD__)
 	add_iv(fd);
 	add_iv(band);
 #endif
