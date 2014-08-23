@@ -1,6 +1,7 @@
 Revision history for Signal-Unsafe
 
 {{$NEXT}}
+          Fix compile issue on < 5.16
 
 0.003     2014-08-22 15:34:17+03:00 Europe/Sofia
           Fix leak when removing handler

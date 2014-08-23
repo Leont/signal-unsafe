@@ -155,7 +155,7 @@ void S_sigaction_to_hash(pTHX_ struct sigaction* ptr, HV* hash, CV* handler) {
 	mask = newSVpvn((const char*)&ptr->sa_mask, sizeof(sigset_t));
 #else
 	sigset_t* set = PerlMem_malloc(sizeof(sigset_t));
-	Copy(&ptr->sa_mask, set, sigset_t, 1);
+	Copy(&ptr->sa_mask, set, 1, sigset_t);
 	mask = newSViv(PTR2IV(set));
 #endif
 	hv_stores(hash, "MASK", sv_bless(newRV_noinc(mask), gv_stashpvs("POSIX::SigSet", 0)));
