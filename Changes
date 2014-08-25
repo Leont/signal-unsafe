@@ -1,6 +1,7 @@
 Revision history for Signal-Unsafe
 
 {{$NEXT}}
+          Check for ROK-ness
 
 0.004     2014-08-24 11:44:15+03:00 Europe/Sofia
           Fix compile issue on < 5.16

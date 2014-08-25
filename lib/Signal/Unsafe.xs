@@ -94,7 +94,7 @@ static void dumb_handler(int signo) {
 
 static HV* S_get_action(pTHX_ SV* input) {
     if(SvTRUE(input)) {
-		if(sv_isa(input, "POSIX::SigAction"))
+		if(SvROK(input) && sv_isa(input, "POSIX::SigAction"))
 			return (HV*)SvRV(input);
 		else
 			Perl_croak(aTHX_ "Action is not of type POSIX::SigAction: %s", SvPV_nolen(input));
@@ -134,7 +134,8 @@ static void S_hash_to_sigaction(pTHX_ struct sigaction* ptr, CV** new_handler, H
 
 	if (hv_exists(values, "MASK", 4)) {
 		SV** mask_ptr = hv_fetchs(values, "MASK", 0);
-		ptr->sa_mask = *(const sigset_t *) SvPV_nolen(SvRV(*mask_ptr)); // XXX
+		if (SvROK(*mask_ptr))
+			ptr->sa_mask = *(const sigset_t *) SvPV_nolen(SvRV(*mask_ptr)); // XXX
 	}
 }
 #define hash_to_sigaction(ptr, handler, val) S_hash_to_sigaction(aTHX_ ptr, handler, val)
