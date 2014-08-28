@@ -6,6 +6,9 @@ use warnings FATAL => 'all';
 use XSLoader;
 XSLoader::load(__PACKAGE__, Signal::Unsafe->VERSION);
 
+use Exporter 5.57 'import';
+our @EXPORT_OK = qw/sigaction/;
+
 use Config;
 use IPC::Signal qw/sig_num sig_name/;
 use List::Util 'reduce';

@@ -1,6 +1,7 @@
 Revision history for Signal-Unsafe
 
 {{$NEXT}}
+          Export sigaction optionally
 
 0.005     2014-08-25 13:55:49+03:00 Europe/Sofia
           Check for ROK-ness
