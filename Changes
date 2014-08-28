@@ -1,6 +1,8 @@
 Revision history for Signal-Unsafe
 
 {{$NEXT}}
+
+0.006     2014-08-28 14:51:59+02:00 Europe/Amsterdam
           Export sigaction optionally
 
 0.005     2014-08-25 13:55:49+03:00 Europe/Sofia
