@@ -205,7 +205,7 @@ This is simple the number of the signal
 
 =item * The L<Signal::Info|Signal::Info> object with the information about the signal.
 
-=item * The signal information as a binary blob
+=item * The context pointer (as an unsigned integer)
 
 =back
 

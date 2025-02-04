@@ -35,7 +35,7 @@ static void smart_handler(int signo, siginfo_t* info, void* context) {
 	EXTEND(SP, 3);
 	mPUSHi(signo);
 	mPUSHs(make_args(info));
-	mPUSHs(newSVpvn((const char*)info, sizeof *info));
+	mPUSHu(PTR2UV(context));
 	PUTBACK;
 	call_sv((SV*)callback, G_VOID | G_DISCARD);
 	FREETMPS;
