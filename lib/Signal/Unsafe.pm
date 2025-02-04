@@ -13,6 +13,7 @@ use Config;
 use IPC::Signal qw/sig_num sig_name/;
 use List::Util 'reduce';
 use POSIX qw/SA_SIGINFO/;
+use Signal::Info;
 
 {
 	no warnings 'once';
@@ -202,45 +203,7 @@ The signal handler will be called as soon as the signal is dispatched to the pro
 
 This is simple the number of the signal
 
-=item * The signal information hash
-
-This is a hash containing the following entries:
-
-=over 4
-
-=item * signo
-
-=item * code
-
-=item * errno
-
-=item * pid
-
-=item * uid
-
-=item * status
-
-=item * utime
-
-=item * stime
-
-=item * int
-
-=item * ptr
-
-=item * overrun
-
-=item * timerid
-
-=item * addr
-
-=item * band
-
-=item * fd
-
-=back
-
-Most values are not meaningful for most signal events.
+=item * The L<Signal::Info|Signal::Info> object with the information about the signal.
 
 =item * The signal information as a binary blob
 
