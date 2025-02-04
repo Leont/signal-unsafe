@@ -1,7 +1,7 @@
 package Signal::Unsafe;
 
 use strict;
-use warnings FATAL => 'all';
+use warnings;
 
 use XSLoader;
 XSLoader::load(__PACKAGE__, Signal::Unsafe->VERSION);
