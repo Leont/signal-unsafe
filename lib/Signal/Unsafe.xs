@@ -2,6 +2,7 @@
 #include "EXTERN.h"
 #include "perl.h"
 #include "XSUB.h"
+#include "ppport.h"
 
 #define MY_CXT_KEY "Signal::Unsafe" XSVERSION
 typedef struct {
